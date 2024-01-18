@@ -24,7 +24,7 @@ app.use('/api', photosRoute);
 app.use('/api', tripRoute);
 app.use('/api', userRoute);
 app.use('/api', reviewRoute);
-
+app.use('/api', credentialsRoute);
 
 expressOasGenerator.init(app, {});
 
