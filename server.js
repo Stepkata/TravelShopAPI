@@ -10,6 +10,7 @@ import photosRoute from "./Routes/photosRoute.js";
 import tripRoute from "./Routes/tripRoute.js";
 import reviewRoute from "./Routes/reviewRoute.js";
 import userRoute from "./Routes/userRoute.js";
+import credentialsRoute from "./Routes/credentialsRoute.js";
 import expressOasGenerator from'express-oas-generator';
 
 const app = express();

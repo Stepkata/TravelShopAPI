@@ -1,17 +1,24 @@
-import { doc, collection, getDocs, setDoc, updateDoc, deleteDoc, query, where } from 'firebase/firestore';
-import db from './your-firestore-configuration'; // Replace with your Firestore configuration
-import Credentials from './Credentials'; // Import your Credentials class
+import * as bcrypt from 'bcryptjs';
+import Credentials from '../Models/credentialsModel.js'; // Import your Credentials class
+import { getFirestore, collection, doc, updateDoc, deleteDoc, where, query, getDocs, getDoc, addDoc, setDoc } from 'firebase/firestore';
+import firebase from '../firebase.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-const collectionName = 'YourCredentialsCollection'; // Replace with your actual collection name
+const db = getFirestore(firebase);
+
+const collectionName = 'Credentials'; // Replace with your actual collection name
 
 export const createCredentials = async (req, res) => {
     try {
         const { userId, password } = req.body;
 
+        const hashedPassword = await hashPassword(password);
+
         // Generate a token (you need to implement your own logic here)
         const token = generateToken();
 
-        const credentials = new Credentials(userId, token, password);
+        const credentials = new Credentials(userId, token, hashedPassword);
 
         const customDocRef = doc(collection(db, collectionName), userId);
         await setDoc(customDocRef, credentials);
@@ -22,6 +29,35 @@ export const createCredentials = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
+
+export async function hashPassword(password) {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+
+}
+
+export async function comparePasswords(plainTextPassword, hashedPassword) {
+    try {
+      const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
+      return isMatch;
+    } catch (error) {
+      console.error('Error comparing passwords:', error);
+      throw error;
+    }
+  }
+
+const generateToken = () => {
+    dotenv.config({path: './.env'});
+    const secretKey = process.env.SECRET_KEY;
+    const options = {
+        expiresIn: '1h',
+    };
+    const token = jwt.sign(payload, secretKey, options);
+
+    return token;
+};
+
 
 export const getUserCredentials = async (req, res) => {
     try {
@@ -113,10 +149,3 @@ export const updateCredentialsToken = async (req, res) => {
     }
 };
 
-// Function to generate a token (replace with your own logic)
-function generateToken() {
-    // Implement your token generation logic here
-    return 'generated-token';
-}
-
-export default credentialsController;

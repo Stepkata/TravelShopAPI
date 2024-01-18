@@ -5,7 +5,7 @@ import {
     deleteCredentials,
     updateCredentialsPassword,
     updateCredentialsToken
-} from './credentialsController';
+} from '../Controllers/credentialsController.js';
 
 const credentialsRouter = express.Router();
 
