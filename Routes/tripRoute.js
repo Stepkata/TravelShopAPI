@@ -11,6 +11,7 @@ router.post('/wycieczki/:Id', WycieczkaController.createWycieczka);
 
 router.put('/wycieczki/:tripId', WycieczkaController.updateWycieczka);
 router.put('/wycieczki/spots/:tripId', WycieczkaController.updateWycieczkaSpots);
+router.put('/wycieczki/rating/:tripId', WycieczkaController.updateWycieczkaRating);
 router.delete('/wycieczki/:tripId', WycieczkaController.deleteWycieczka);
 
 export default router;

@@ -218,6 +218,47 @@ export const updateWycieczkaSpots = async (req, res, next) => {
     }
 };
 
+export const updateWycieczkaRating = async (req, res, next) => {
+    try {
+        const tripId = req.params.tripId; // Assuming tripId is passed as a query parameter
+        const updatedData = req.body; // Assuming the updated data is passed in the request body
+    
+        // Create a query to find the wycieczka by tripId
+        const q = query(collection(db, collectionName), where('Id', '==', parseInt(tripId)));
+    
+        // Get the documents that match the query
+        const querySnapshot = await getDocs(q);
+    
+        // Check if any documents were found
+        if (querySnapshot.size > 0) {
+            // Retrieve the first document found
+            const docToUpdate = querySnapshot.docs[0];
+
+            const wycieczka = new Wycieczka(
+                docToUpdate.data().Id,
+                docToUpdate.data().Nazwa,
+                docToUpdate.data().Kraj,
+                docToUpdate.data().DataRozpoczecia,
+                docToUpdate.data().DataZakonczenia,
+                docToUpdate.data().CenaJednostkowa,
+                docToUpdate.data().MaxIloscMiejsc,
+                docToUpdate.data().IloscMiejsc,
+                docToUpdate.data().Opis,
+                docToUpdate.data().DlugiOpis,
+                parseInt(updatedData)
+            );
+            // Update the document
+            await updateDoc(doc(db, collectionName, docToUpdate.id), updatedData);
+    
+            res.status(200).send('Wycieczka updated successfully');
+        } else {
+            res.status(404).send('Wycieczka not found');
+        }
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+
 export const getAllWycieczki = async (req, res, next) => {
     try {
         const wycieczkiSnapshot = await getDocs(collection(db, collectionName));
